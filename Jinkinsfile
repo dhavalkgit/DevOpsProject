@@ -1,0 +1,43 @@
+   pipeline {
+    agent any
+
+    tools {
+        maven "M3"
+        jdk "J8"
+    }
+
+    stages {
+        stage('Compile') {
+            steps {
+                git 'https://github.com/dhavalkgit/DevOpsProject.git'
+            sh "mvn compile"
+            }
+        }
+        stage('CodeReview'){
+            steps{
+                sh "mvn pmd:pmd"
+            }
+        }
+        stage('UnitTest'){
+            steps{
+                sh "mvn test"
+            }
+        }
+        stage('MaticCheck'){
+            steps{
+                sh "mvn cobertura:cobertura -Dcobertura.report.format=xml"
+            }
+        }
+        stage('Package'){
+            steps{
+                sh "mvn package"
+            }
+        }
+        stage('Deploy'){
+            steps{
+               sh "docker build -t firstimage ."
+               sh "docker run -dp 9000:8080 --name firstcon firstimage"
+            }
+        }
+    }
+}
