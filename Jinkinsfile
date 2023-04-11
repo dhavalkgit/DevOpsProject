@@ -10,7 +10,7 @@
         stage('Compile') {
             steps {
                 git 'https://github.com/dhavalkgit/DevOpsProject.git'
-            sh "mvn compile"
+                sh "mvn compile"
             }
         }
         stage('CodeReview'){
