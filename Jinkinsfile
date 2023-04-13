@@ -1,6 +1,5 @@
-   pipeline {
+pipeline {
     agent any
-
     tools {
         maven "M3"
         jdk "J8"
@@ -12,6 +11,14 @@
                 git 'https://github.com/dhavalkgit/DevOpsProject.git'
                 sh "mvn compile"
             }
+            post{
+                always{
+                    emailext to: "kp99dhaval@gmail.com",
+                    subject: "Compile is Successfully",
+                    body: "Test",
+                    attachLog: true
+                }
+            }
         }
         stage('CodeReview'){
             steps{
@@ -22,22 +29,37 @@
             steps{
                 sh "mvn test"
             }
+            post {
+                always{
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
         }
         stage('MaticCheck'){
             steps{
                 sh "mvn cobertura:cobertura -Dcobertura.report.format=xml"
+                cobertura coberturaReportFile: 'target/site/cobertura/coverage.xml'
+            }
+            post{
+                always{
+                    emailext to: "kp99dhaval@gmail.com",
+                    subject: "Code Coverage report",
+                    body: "Test",
+                    attachmentsPattern: 'target/site/pmd.html, target/site/css'
+                    
+                }
             }
         }
         stage('Package'){
             steps{
                 sh "mvn package"
             }
-        }
-        stage('Deploy'){
-            steps{
-               sh "docker build -t firstimage ."
-               sh "docker run -dp 9000:8080 --name firstcon firstimage"
-            }
         }
-    }
+        // stage('Deploy'){
+        //     steps{
+        //         sh 'docker build -t firstimage .'
+        //         sh 'docker run -dp 9001:8080 --name thirddcon firstimage'
+        //     }
+        // }
+    }
 }
