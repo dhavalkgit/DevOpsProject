@@ -1,2 +1,2 @@
-To run this porject tyoe in browser 
+To run this porject type in browser 
 https://localhost:9000
